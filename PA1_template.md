@@ -26,7 +26,7 @@ options(scipen=999)
 hist(steps_per_day$steps,main="Histogram for Number of Steps per Day", xlab="Number of Steps per Day" )
 ```
 
-![plot of chunk Histogram total steps per day](/figure/Histogram total steps per day-1.png)
+![plot of chunk Histogram total steps per day](figure/Histogram total steps per day-1.png)
 
 * The average steps per day are 10766 and the median is 10765
 
