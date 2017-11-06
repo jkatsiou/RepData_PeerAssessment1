@@ -3,7 +3,8 @@
 
 ## Loading and preprocessing the data :
 
-```{r Data loading, echo=TRUE}
+
+```r
 activity <- read.csv("./activity.csv")
 ```
 
@@ -12,44 +13,53 @@ activity <- read.csv("./activity.csv")
 
 * Calculation of total steps per day
 
-```{r Calculation of total steps per day, echo=TRUE}
+
+```r
 steps_per_day <- aggregate(steps ~ date,activity,sum,na.rm=TRUE)
 options(scipen=999)
 ```
 
 * Histogram of Total Steps for each day 
 
-```{r Histogram total steps per day, echo=TRUE}
+
+```r
 hist(steps_per_day$steps,main="Histogram for Number of Steps per Day", xlab="Number of Steps per Day" )
 ```
 
-* The average steps per day are `r round(mean(steps_per_day$steps,na.rm=TRUE),digits=0)` and the median is `r round(median(steps_per_day$steps,na.rm=TRUE),digits=0)`
+![plot of chunk Histogram total steps per day](figure/Histogram total steps per day-1.png)
+
+* The average steps per day are 10766 and the median is 10765
 
 
 ## What is the average daily activity pattern?
 
 * Calculation of mean steps per interval
 
-```{r mean of steps per interval calculation, echo=TRUE}
+
+```r
 mean_steps_per_interval <- aggregate(steps ~ interval,activity,mean,na.rm=TRUE)
 ```
 
 * Time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 
-```{r plotting of mean steps per interval, echo=TRUE}
+
+```r
 library("ggplot2")
 ggplot(mean_steps_per_interval, aes(interval,steps)) + geom_line() + ylab("Average of Steps")
 ```
 
+![plot of chunk plotting of mean steps per interval](figure/plotting of mean steps per interval-1.png)
+
 * Calculation of interval with maximum steps
 
-```{r interval with max steps, echo=TRUE}
+
+```r
 max_interval <- mean_steps_per_interval[which(mean_steps_per_interval$steps == max(mean_steps_per_interval$steps)),1]
 
 max_steps <- mean_steps_per_interval[which(mean_steps_per_interval$steps == max(mean_steps_per_interval$steps)),2]
 ```
 
-* The interval with the maximun number of steps is the interval with id : `r max_interval`, which contains `r round(max_steps,digits=0)` steps.
+* The interval with the maximun number of steps is the interval with id : 835, which contains 206 steps.
 
 
 
@@ -57,16 +67,18 @@ max_steps <- mean_steps_per_interval[which(mean_steps_per_interval$steps == max(
 
 * Calculation of rows with missing values
 
-```{r count of rows with missing values, echo=TRUE}
+
+```r
 rows_missing <- nrow(activity[which(is.na(activity$steps)),])
 ```
 
-* The number of rows with missing values is : `r rows_missing`.
+* The number of rows with missing values is : 2304.
 
 * A new data set will be created without missing values "activity_nm". The missing values of * activity_nm will be replaced by the mean value of the corresponding 5 minute interval,     stored in data set mean_steps_per_interval created earlier.
 
 
-```{r replacement of missing values of steps with mean of steps of specific interval, echo=TRUE}
+
+```r
 activity_nm <- activity
 
 for(i in 1:nrow(activity_nm)){
@@ -78,28 +90,30 @@ for(i in 1:nrow(activity_nm)){
     	}
   }
 }
-
 ```
 
 * Aggregation of new data set "activity_pr" and plotting 
 
-```{r data preparation and plotting of number of steps per day, echo=TRUE}
+
+```r
 steps_per_day_nm <- aggregate(steps ~ date,activity_nm,sum,na.rm=TRUE)
 options(scipen=999)
 
 hist(steps_per_day_nm$steps,main="Histogram for Number of Steps per Day (w/o Missing Values)", xlab="Number of Steps per Day" )
-
 ```
 
+![plot of chunk data preparation and plotting of number of steps per day](figure/data preparation and plotting of number of steps per day-1.png)
 
-* The average steps per day (w/o missing values) is :`r round(mean(steps_per_day_nm$steps,na.rm=TRUE),digits=0)` and the median (w/o missing values) : `r round(median(steps_per_day_nm$steps,na.rm=TRUE),digits=0)`. Both values are equal to the ones from first part of the assignment (data set with missing values), thus imputting  missing values had no effect on the estimates of total daily number of steps.
+
+* The average steps per day (w/o missing values) is :10766 and the median (w/o missing values) : 10765. Both values are equal to the ones from first part of the assignment (data set with missing values), thus imputting  missing values had no effect on the estimates of total daily number of steps.
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
 * Creation of New factor variable named WeekPeriod containing info of day type (weekday/weekend) and binding to activity_nm data set  
 
-```{r factor creation and binding to data frame, echo=TRUE}
+
+```r
 options(warn=-1)
 
 activity_nm$date <- as.Date(activity_nm$date, format = "%Y-%m-%d")
@@ -111,13 +125,14 @@ activity_nm <- cbind(activity_nm,WeekPeriod =as.factor(ifelse(weekdays(activity_
 
 * Aggregation of data set activity_nm (no missing values) per Week period and interval and plotting.
 
-```{r data preparation and plotting, echo=TRUE}
+
+```r
 steps_wPeriod_interval_nm <- aggregate(steps ~ interval + WeekPeriod,activity_nm,mean,na.rm=TRUE)
 
 ggplot(steps_wPeriod_interval_nm, aes(interval,steps)) + geom_line() + ylab("Average of Steps") + facet_grid(steps_wPeriod_interval_nm$WeekPeriod ~.)
-
-
 ```
+
+![plot of chunk data preparation and plotting](figure/data preparation and plotting-1.png)
 
 
 
